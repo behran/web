@@ -13,7 +13,10 @@ struct AppState {
 
 #[get("/")]
 async fn index(data: web::Data<AppState>) -> impl Responder {
-    HttpResponse::Ok().json(data.products.lock().unwrap().to_vec())
+    match data.products.lock() {
+        Ok(v) => HttpResponse::Ok().json(v.to_vec()),
+        Err(_) => HttpResponse::InternalServerError().into()
+    }
 }
 
 #[actix_web::main]
